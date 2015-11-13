@@ -65,19 +65,19 @@ namespace Nancy.Metadata.Swagger.DemoApplication.Modules
         public RootMetadataModule()
         {
             Describe["SimpleRequest"] = desc => new SwaggerRouteMetadata(desc)
-                .With(i => i.WithResponseModel("200", typeof(SimpleResponseModel), "Sample response"));
+                .With(i => i.WithResponseModel<SimpleRequestModel>(HttpStatusCode.OK, "Sample response"));
 
             Describe["SimpleRequestWithParameter"] = desc => new SwaggerRouteMetadata(desc)
-                .With(i => i.WithResponseModel("200", typeof(SimpleResponseModel), "Sample response")
+                .With(i => i.WithResponseModel<SimpleResponseModel>(HttpStatusCode.OK, "Sample response")
                             .WithRequestParameter("name"));
 
             Describe["SimplePostRequst"] = desc => new SwaggerRouteMetadata(desc)
-                .With(info => info.WithResponseModel("200", typeof(SimpleResponseModel), "Sample response"));
+                .With(info => info.WithResponseModel<SimpleResponseModel>(HttpStatusCode.OK, "Sample response"));
 
             Describe["PostRequestWithModel"] = desc => new SwaggerRouteMetadata(desc)
-                .With(info => info.WithResponseModel("200", typeof(SimpleResponseModel))
-                    .WithResponse("400", "Bad request")
-                    .WithRequestModel(typeof(SimpleRequestModel)));
+                .With(info => info.WithResponseModel<SimpleResponseModel>(HttpStatusCode.OK)
+                    .WithResponse(HttpStatusCode.BadRequest, "Bad request")
+                    .WithRequestModel<SimpleRequestModel>());
         }
     }
 }

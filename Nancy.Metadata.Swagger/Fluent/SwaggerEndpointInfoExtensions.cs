@@ -9,31 +9,33 @@ namespace Nancy.Metadata.Swagger.Fluent
 {
     public static class SwaggerEndpointInfoExtensions
     {
-        public static SwaggerEndpointInfo WithResponseModel(this SwaggerEndpointInfo endpointInfo, string statusCode, Type modelType, string description = null)
+        public static SwaggerEndpointInfo WithResponseModel<T>(this SwaggerEndpointInfo endpointInfo, HttpStatusCode statusCode, string description = null)
         {
             if (endpointInfo.ResponseInfos == null)
             {
                 endpointInfo.ResponseInfos = new Dictionary<string, SwaggerResponseInfo>();
             }
 
-            endpointInfo.ResponseInfos[statusCode] = GenerateResponseInfo(description, modelType);
+            var statusCodeString = ((int)statusCode).ToString();
+            endpointInfo.ResponseInfos[statusCodeString] = GenerateResponseInfo<T>(description);
 
             return endpointInfo;
         }
 
-        public static SwaggerEndpointInfo WithDefaultResponse(this SwaggerEndpointInfo endpointInfo, Type responseType)
+        public static SwaggerEndpointInfo WithDefaultResponse<T>(this SwaggerEndpointInfo endpointInfo)
         {
-            return endpointInfo.WithResponseModel("200", responseType);
+            return endpointInfo.WithResponseModel<T>(HttpStatusCode.OK);
         }
 
-        public static SwaggerEndpointInfo WithResponse(this SwaggerEndpointInfo endpointInfo, string statusCode, string description)
+        public static SwaggerEndpointInfo WithResponse(this SwaggerEndpointInfo endpointInfo, HttpStatusCode statusCode, string description)
         {
             if (endpointInfo.ResponseInfos == null)
             {
                 endpointInfo.ResponseInfos = new Dictionary<string, SwaggerResponseInfo>();
             }
 
-            endpointInfo.ResponseInfos[statusCode] = GenerateResponseInfo(description);
+            var statusCodeString = ((int)statusCode).ToString();
+            endpointInfo.ResponseInfos[statusCodeString] = GenerateResponseInfo(description);
 
             return endpointInfo;
         }
@@ -60,7 +62,7 @@ namespace Nancy.Metadata.Swagger.Fluent
             return endpointInfo;
         }
 
-        public static SwaggerEndpointInfo WithRequestModel(this SwaggerEndpointInfo endpointInfo, Type requestType, string name = "body", string description = null, bool required = true, string loc = "body")
+        public static SwaggerEndpointInfo WithRequestModel<T>(this SwaggerEndpointInfo endpointInfo, string name = "body", string description = null, bool required = true, string loc = "body")
         {
             if (endpointInfo.RequestParameters == null)
             {
@@ -73,7 +75,7 @@ namespace Nancy.Metadata.Swagger.Fluent
                 Description = description,
                 In = loc,
                 Name = name,
-                Schema = GetSchema(requestType)
+                Schema = GetSchema<T>()
             });
 
             return endpointInfo;
@@ -96,11 +98,11 @@ namespace Nancy.Metadata.Swagger.Fluent
             return endpointInfo;
         }
 
-        private static SwaggerResponseInfo GenerateResponseInfo(string description, Type responseType)
+        private static SwaggerResponseInfo GenerateResponseInfo<T>(string description)
         {
             return new SwaggerResponseInfo
             {
-                Schema = GetSchema(responseType),
+                Schema = GetSchema<T>(),
                 Description = description
             };
         }
@@ -113,9 +115,9 @@ namespace Nancy.Metadata.Swagger.Fluent
             };
         }
 
-        private static JsonSchema4 GetSchema(Type type)
+        private static JsonSchema4 GetSchema<T>()
         {
-            return JsonSchema4.FromType(type);
+            return JsonSchema4.FromType(typeof(T));
         }
     }
 }
