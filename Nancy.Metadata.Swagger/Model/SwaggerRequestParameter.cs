@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
+using NJsonSchema;
 
 namespace Nancy.Metadata.Swagger.Model
 {
@@ -24,6 +25,6 @@ namespace Nancy.Metadata.Swagger.Model
         public string Format { get; set; }
 
         [JsonProperty("schema")]
-        public JSchema Schema { get; set; }
+        public JsonSchema4 Schema { get; set; }
     }
 }
